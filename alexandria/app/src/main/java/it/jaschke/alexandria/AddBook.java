@@ -78,7 +78,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                     ean="978"+ean;
                 }
                 if(ean.length()<13){
-                    clearFields();
+                    //clearFields();
                     return;
                 }
                 //Once we have an ISBN, start a book intent
@@ -114,6 +114,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             @Override
             public void onClick(View view) {
                 ean.setText("");
+                clearFields();
             }
         });
 
