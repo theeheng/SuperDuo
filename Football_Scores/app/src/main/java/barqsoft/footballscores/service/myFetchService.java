@@ -135,11 +135,11 @@ public class myFetchService extends IntentService
     private void processJSONdata (String JSONdata,Context mContext, boolean isReal)
     {
         //JSON data
-        final String SERIE_A = "357";
-        final String PREMIER_LEGAUE = "354";
+        final String SERIE_A = "401";
+        final String PREMIER_LEGAUE = "398";
         final String CHAMPIONS_LEAGUE = "362";
-        final String PRIMERA_DIVISION = "358";
-        final String BUNDESLIGA = "351";
+        final String PRIMERA_DIVISION = "399";
+        final String BUNDESLIGA = "394";
         final String SEASON_LINK = "http://api.football-data.org/alpha/soccerseasons/";
         final String MATCH_LINK = "http://api.football-data.org/alpha/fixtures/";
         final String FIXTURES = "fixtures";
@@ -178,12 +178,12 @@ public class myFetchService extends IntentService
                 League = match_data.getJSONObject(LINKS).getJSONObject(SOCCER_SEASON).
                         getString("href");
                 League = League.replace(SEASON_LINK,"");
-                if(     League.equals(PREMIER_LEGAUE)      ||
+                /*if(     League.equals(PREMIER_LEGAUE)      ||
                         League.equals(SERIE_A)             ||
                         League.equals(CHAMPIONS_LEAGUE)    ||
                         League.equals(BUNDESLIGA)          ||
                         League.equals(PRIMERA_DIVISION)     )
-                {
+                {*/
                     match_id = match_data.getJSONObject(LINKS).getJSONObject(SELF).
                             getString("href");
                     match_id = match_id.replace(MATCH_LINK, "");
@@ -243,7 +243,7 @@ public class myFetchService extends IntentService
                     //Log.v(LOG_TAG,Away_goals);
 
                     values.add(match_values);
-                }
+                //}
             }
             int inserted_data = 0;
             ContentValues[] insert_data = new ContentValues[values.size()];
