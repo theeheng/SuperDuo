@@ -3,9 +3,10 @@ package barqsoft.footballscores;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import barqsoft.footballscores.DatabaseContract.scores_table;
-
+import barqsoft.footballscores.DatabaseContract.leagues_table;
 /**
  * Created by yehya khaled on 2/25/2015.
  */
@@ -34,7 +35,19 @@ public class ScoresDBHelper extends SQLiteOpenHelper
                 + scores_table.MATCH_DAY + " INTEGER NOT NULL,"
                 + " UNIQUE ("+scores_table.MATCH_ID+") ON CONFLICT REPLACE"
                 + " );";
+
+        final String CreateLeaguesTable = "CREATE TABLE " + DatabaseContract.LEAGUES_TABLE + " ("
+                + leagues_table._ID + " INTEGER PRIMARY KEY,"
+                + leagues_table.CAPTION_COL + " TEXT NOT NULL,"
+                + leagues_table.LEAGUE_COL + " INTEGER NOT NULL,"
+                + leagues_table.YEAR_COL + " TEXT NOT NULL,"
+                + " UNIQUE ("+leagues_table.LEAGUE_COL+") ON CONFLICT REPLACE"
+                + " );";
+
+        Log.d("sql-statments", CreateScoresTable);
+        Log.d("sql-statments", CreateLeaguesTable);
         db.execSQL(CreateScoresTable);
+        db.execSQL(CreateLeaguesTable);
     }
 
     @Override
@@ -42,5 +55,8 @@ public class ScoresDBHelper extends SQLiteOpenHelper
     {
         //Remove old values when upgrading.
         db.execSQL("DROP TABLE IF EXISTS " + DatabaseContract.SCORES_TABLE);
+
+        //Remove old values when upgrading.
+        db.execSQL("DROP TABLE IF EXISTS " + DatabaseContract.LEAGUES_TABLE);
     }
 }
