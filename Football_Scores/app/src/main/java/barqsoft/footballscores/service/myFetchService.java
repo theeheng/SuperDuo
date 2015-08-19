@@ -39,10 +39,94 @@ public class myFetchService extends IntentService
     @Override
     protected void onHandleIntent(Intent intent)
     {
+        getLeague();
         getData("n2");
         getData("p2");
 
         return;
+    }
+
+    private void getLeague()
+    {
+        final String BASE_URL = "http://api.football-data.org/alpha/soccerseasons/";
+        Uri fetch_build = Uri.parse(BASE_URL).buildUpon().build();
+
+        HttpURLConnection m_connection = null;
+        BufferedReader reader = null;
+        String JSON_data = null;
+        //Opening Connection
+        try {
+            URL fetch = new URL(fetch_build.toString());
+            m_connection = (HttpURLConnection) fetch.openConnection();
+            m_connection.setRequestMethod("GET");
+            m_connection.addRequestProperty("X-Auth-Token","e136b7858d424b9da07c88f28b61989a");
+            m_connection.connect();
+
+            // Read the input stream into a String
+            InputStream inputStream = m_connection.getInputStream();
+            StringBuffer buffer = new StringBuffer();
+            if (inputStream == null) {
+                // Nothing to do.
+                return;
+            }
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                // But it does make debugging a *lot* easier if you print out the completed
+                // buffer for debugging.
+                buffer.append(line + "\n");
+            }
+
+            if (buffer.length() == 0) {
+                // Stream was empty.  No point in parsing.
+                return;
+            }
+            JSON_data = buffer.toString();
+        }
+        catch (Exception e)
+        {
+            Log.e(LOG_TAG,"Exception here" + e.getMessage());
+        }
+        finally {
+            if(m_connection != null)
+            {
+                m_connection.disconnect();
+            }
+            if (reader != null)
+            {
+                try {
+                    reader.close();
+                }
+                catch (IOException e)
+                {
+                    Log.e(LOG_TAG,"Error Closing Stream");
+                }
+            }
+        }
+        try {
+            if (JSON_data != null) {
+                //This bit is to check if the data contains any matches. If not, we call processJson on the dummy data
+                JSONArray matches = new JSONArray(JSON_data);
+                if (matches.length() == 0) {
+                    //if there is no data, call the function on dummy data
+                    //this is expected behavior during the off season.
+                    processLeagueJSONdata(getString(R.string.dummy_data), getApplicationContext(), false);
+                    return;
+                }
+
+
+                processLeagueJSONdata(JSON_data, getApplicationContext(), true);
+            } else {
+                //Could not Connect
+                Log.d(LOG_TAG, "Could not connect to server.");
+            }
+        }
+        catch(Exception e)
+        {
+            Log.e(LOG_TAG, e.getMessage());
+        }
     }
 
     private void getData (String timeFrame)
@@ -132,14 +216,69 @@ public class myFetchService extends IntentService
             Log.e(LOG_TAG,e.getMessage());
         }
     }
+
+    private void processLeagueJSONdata (String JSONdata,Context mContext, boolean isReal)
+    {
+        //JSON data
+        final String SEASON_LINK = "http://api.football-data.org/alpha/soccerseasons/";
+        final String CAPTION = "caption";
+        final String LINKS = "_links";
+        final String SELF = "self";
+        final String LEAGUE = "league";
+        final String YEAR = "year";
+
+        //Match data
+        String mLeague = null;
+        String mCaption = null;
+        String mSeasonId = null;
+        String mYear = null;
+
+        try {
+            JSONArray seasons = new JSONArray(JSONdata);
+
+
+            //ContentValues to be inserted
+            Vector<ContentValues> values = new Vector <ContentValues> (seasons.length());
+            for(int i = 0;i < seasons.length();i++)
+            {
+                JSONObject season_data = (JSONObject) seasons.get(i);
+                mSeasonId = season_data.getJSONObject(LINKS).getJSONObject(SELF).
+                        getString("href");
+                mSeasonId = mSeasonId.replace(SEASON_LINK, "");
+
+
+                mLeague = season_data.getString(LEAGUE);
+                mCaption = season_data.getString(CAPTION);
+                mYear = season_data.getString(YEAR);
+
+
+                ContentValues league_values = new ContentValues();
+                league_values.put(DatabaseContract.leagues_table._ID,mSeasonId);
+                league_values.put(DatabaseContract.leagues_table.LEAGUE_COL,mLeague);
+                league_values.put(DatabaseContract.leagues_table.CAPTION_COL,mCaption);
+                league_values.put(DatabaseContract.leagues_table.YEAR_COL,mYear);
+
+
+                values.add(league_values);
+
+            }
+            int inserted_data = 0;
+            ContentValues[] insert_data = new ContentValues[values.size()];
+            values.toArray(insert_data);
+            inserted_data = mContext.getContentResolver().bulkInsert(
+                    DatabaseContract.BASE_CONTENT_URI.buildUpon().appendPath(DatabaseContract.PATH_LEAGUE).build(),insert_data);
+
+            Log.v(LOG_TAG,"Succesfully Inserted League : " + String.valueOf(inserted_data));
+        }
+        catch (JSONException e)
+        {
+            Log.e(LOG_TAG,e.getMessage());
+        }
+    }
+
     private void processJSONdata (String JSONdata,Context mContext, boolean isReal)
     {
         //JSON data
-        final String SERIE_A = "401";
-        final String PREMIER_LEGAUE = "398";
-        final String CHAMPIONS_LEAGUE = "362";
-        final String PRIMERA_DIVISION = "399";
-        final String BUNDESLIGA = "394";
         final String SEASON_LINK = "http://api.football-data.org/alpha/soccerseasons/";
         final String MATCH_LINK = "http://api.football-data.org/alpha/fixtures/";
         final String FIXTURES = "fixtures";
@@ -178,12 +317,7 @@ public class myFetchService extends IntentService
                 League = match_data.getJSONObject(LINKS).getJSONObject(SOCCER_SEASON).
                         getString("href");
                 League = League.replace(SEASON_LINK,"");
-                /*if(     League.equals(PREMIER_LEGAUE)      ||
-                        League.equals(SERIE_A)             ||
-                        League.equals(CHAMPIONS_LEAGUE)    ||
-                        League.equals(BUNDESLIGA)          ||
-                        League.equals(PRIMERA_DIVISION)     )
-                {*/
+
                     match_id = match_data.getJSONObject(LINKS).getJSONObject(SELF).
                             getString("href");
                     match_id = match_id.replace(MATCH_LINK, "");
@@ -243,7 +377,6 @@ public class myFetchService extends IntentService
                     //Log.v(LOG_TAG,Away_goals);
 
                     values.add(match_values);
-                //}
             }
             int inserted_data = 0;
             ContentValues[] insert_data = new ContentValues[values.size()];
@@ -251,7 +384,7 @@ public class myFetchService extends IntentService
             inserted_data = mContext.getContentResolver().bulkInsert(
                     DatabaseContract.BASE_CONTENT_URI.buildUpon().appendPath(DatabaseContract.PATH_SCORE).build(),insert_data);
 
-            //Log.v(LOG_TAG,"Succesfully Inserted : " + String.valueOf(inserted_data));
+            Log.v(LOG_TAG,"Succesfully Inserted Scores : " + String.valueOf(inserted_data));
         }
         catch (JSONException e)
         {

@@ -1,26 +1,35 @@
 package barqsoft.footballscores;
 
+import android.content.Context;
+import android.database.Cursor;
+
 /**
  * Created by yehya khaled on 3/3/2015.
  */
 public class Utilies
 {
-    public static final int SERIE_A = 401;
-    public static final int PREMIER_LEGAUE = 398;
-    public static final int CHAMPIONS_LEAGUE = 362;
-    public static final int PRIMERA_DIVISION = 399;
-    public static final int BUNDESLIGA = 394;
-    public static String getLeague(int league_num)
+    public static int CHAMPIONS_LEAGUE;
+    public static int TESTING_LEAGUE = 357;
+    public static String getLeague(int league_num, Context mContext)
     {
-        switch (league_num)
-        {
-            case SERIE_A : return "Seria A";
-            case PREMIER_LEGAUE : return "Premier League";
-            case CHAMPIONS_LEAGUE : return "UEFA Champions League";
-            case PRIMERA_DIVISION : return "Primera Division";
-            case BUNDESLIGA : return "Bundesliga";
-            default: return "Not known League Please report";
+        if(league_num == TESTING_LEAGUE)
+            return "TESTING LEAGUE";
+
+        // Queries the user dictionary and returns results
+        Cursor mCursor = mContext.getContentResolver().query(
+                DatabaseContract.leagues_table.buildLeagueWithId(),   // The content URI of the words table
+                null,                        // The columns to return for each row
+                null,                    // Selection criteria
+                new String[]{Integer.toString(league_num)},                     // Selection criteria
+                null);
+
+        if(mCursor != null) {
+            mCursor.moveToFirst();
+            String caption = mCursor.getString(1);
+            return caption;
         }
+
+        return "";
     }
     public static String getMatchDay(int match_day,int league_num)
     {

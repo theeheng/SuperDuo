@@ -185,7 +185,7 @@ public class ScoresProvider extends ContentProvider
                 {
                     for(ContentValues value : values)
                     {
-                        long _id = db.insertWithOnConflict(DatabaseContract.SCORES_TABLE, null, value,
+                        long _id = db.insertWithOnConflict(DatabaseContract.LEAGUES_TABLE, null, value,
                                 SQLiteDatabase.CONFLICT_REPLACE);
                         if (_id != -1)
                         {
