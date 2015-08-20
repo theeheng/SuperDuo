@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import barqsoft.footballscores.DatabaseContract;
 import barqsoft.footballscores.R;
+import barqsoft.footballscores.Utilies;
 
 /**
  * Created by yehya khaled on 3/2/2015.
@@ -112,12 +113,12 @@ public class myFetchService extends IntentService
                 if (matches.length() == 0) {
                     //if there is no data, call the function on dummy data
                     //this is expected behavior during the off season.
-                    processLeagueJSONdata(getString(R.string.dummy_data), getApplicationContext(), false);
+                    processLeagueJSONdata(getString(R.string.dummy_data_league), getApplicationContext(), false);
                     return;
                 }
 
-
                 processLeagueJSONdata(JSON_data, getApplicationContext(), true);
+
             } else {
                 //Could not Connect
                 Log.d(LOG_TAG, "Could not connect to server.");
@@ -251,17 +252,33 @@ public class myFetchService extends IntentService
                 mCaption = season_data.getString(CAPTION);
                 mYear = season_data.getString(YEAR);
 
+                if(mLeague.equals("PL"))
+                {
+                    Utilies.setChampionsLeague(Integer.parseInt(mSeasonId));
+                }
 
                 ContentValues league_values = new ContentValues();
                 league_values.put(DatabaseContract.leagues_table._ID,mSeasonId);
                 league_values.put(DatabaseContract.leagues_table.LEAGUE_COL,mLeague);
-                league_values.put(DatabaseContract.leagues_table.CAPTION_COL,mCaption);
+                league_values.put(DatabaseContract.leagues_table.CAPTION_COL, mCaption);
                 league_values.put(DatabaseContract.leagues_table.YEAR_COL,mYear);
 
 
                 values.add(league_values);
 
             }
+
+            if(isReal)
+            {
+                ContentValues league_values = new ContentValues();
+                league_values.put(DatabaseContract.leagues_table._ID, "357");
+                league_values.put(DatabaseContract.leagues_table.LEAGUE_COL,"TEST1");
+                league_values.put(DatabaseContract.leagues_table.CAPTION_COL, "Test Ligue");
+                league_values.put(DatabaseContract.leagues_table.YEAR_COL,"2015");
+
+                values.add(league_values);
+            }
+
             int inserted_data = 0;
             ContentValues[] insert_data = new ContentValues[values.size()];
             values.toArray(insert_data);
@@ -342,6 +359,12 @@ public class myFetchService extends IntentService
                         if(!isReal){
                             //This if statement changes the dummy data's date to match our current date range.
                             Date fragmentdate = new Date(System.currentTimeMillis()+((i-2)*86400000));
+
+                            if(i >= 3)
+                            {
+                                fragmentdate = new Date(System.currentTimeMillis()+((i-3)*86400000));
+                            }
+
                             SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
                             mDate=mformat.format(fragmentdate);
                         }

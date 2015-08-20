@@ -31,6 +31,6 @@
         android:background="@drawable/widget_item_background"
         android:textColor="#ffffff"
         android:textStyle="bold"
-        android:text="@string/empty_view_text"
+        android:text="@string/widget_default_view_text"
         android:textSize="20sp" />
 </FrameLayout>

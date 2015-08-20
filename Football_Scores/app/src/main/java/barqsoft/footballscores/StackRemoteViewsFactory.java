@@ -19,16 +19,20 @@ package barqsoft.footballscores;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private static final int mCount = 10;
+
+    private int mScoreCount = 0;
     private List<WidgetItem> mWidgetItems = new ArrayList<WidgetItem>();
     private Context mContext;
     private int mAppWidgetId;
@@ -40,12 +44,33 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     }
 
     public void onCreate() {
+
+        mScoreCount = 0;
+
+        Date todayDate = new Date(System.currentTimeMillis());
+        SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Cursor mCursor = mContext.getContentResolver().query(
+                DatabaseContract.scores_table.buildScoreWithDate(),   // The content URI of the words table
+                null,                        // The columns to return for each row
+                null,                    // Selection criteria
+                new String[]{mformat.format(todayDate)},                     // Selection criteria
+                null);
+
+        if(mCursor != null) {
+            while(mCursor.moveToNext()) {
+
+                mWidgetItems.add(new WidgetItem(mCursor.getString(mCursor.getColumnIndex(DatabaseContract.scores_table.HOME_COL)),mCursor.getString(mCursor.getColumnIndex(DatabaseContract.scores_table.AWAY_COL)),mCursor.getString(mCursor.getColumnIndex(DatabaseContract.scores_table.HOME_GOALS_COL)), mCursor.getString(mCursor.getColumnIndex(DatabaseContract.scores_table.AWAY_GOALS_COL)), mCursor.getString(mCursor.getColumnIndex(DatabaseContract.scores_table.TIME_COL))));
+
+                mScoreCount++;
+            }
+        }
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
-        for (int i = 0; i < mCount; i++) {
-            mWidgetItems.add(new WidgetItem(i + "!"));
-        }
+        //for (int i = 0; i < mCount; i++) {
+        //    mWidgetItems.add(new WidgetItem(i + "!"));
+        //}
 
         // We sleep for 3 seconds here to show how the empty view appears in the interim.
         // The empty view is set in the StackWidgetProvider and should be a sibling of the
@@ -64,7 +89,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     }
 
     public int getCount() {
-        return mCount;
+        return mScoreCount;
     }
 
     public RemoteViews getViewAt(int position) {
@@ -73,7 +98,12 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         // We construct a remote views item based on our widget item xml file, and set the
         // text based on the position.
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
-        rv.setTextViewText(R.id.widget_item, mWidgetItems.get(position).text);
+        rv.setTextViewText(R.id.home_name, mWidgetItems.get(position).getHomeName());
+        rv.setTextViewText(R.id.away_name, mWidgetItems.get(position).getAwayName());
+        rv.setTextViewText(R.id.score_textview, String.format("%s - %s", mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal()));
+        rv.setTextViewText(R.id.data_textview, mWidgetItems.get(position).getTime());
+        rv.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getHomeName()));
+        rv.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getAwayName()));
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
@@ -81,7 +111,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         extras.putInt(ScoreWidgetProvider.EXTRA_ITEM, position);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-        rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        rv.setOnClickFillInIntent(R.id.score_textview, fillInIntent);
 
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,

@@ -17,9 +17,43 @@
 package barqsoft.footballscores;
 
 public class WidgetItem {
-    public String text;
 
-    public WidgetItem(String text) {
-        this.text = text;
+    private String mHomeName;
+    private String mAwayName;
+    private String mHomeGoal;
+    private String mAwayGoal;
+    private String mTime;
+
+    public String getHomeName()
+    {
+        return mHomeName;
+    }
+
+    public String getAwayName()
+    {
+        return mAwayName;
+    }
+
+    public String getHomeGoal()
+    {
+        return mHomeGoal;
+    }
+
+    public String getAwayGoal()
+    {
+        return mAwayGoal;
+    }
+
+    public String getTime()
+    {
+        return mTime;
+    }
+
+    public WidgetItem(String homeName, String awayName, String homeGoal, String awayGoal, String time) {
+        this.mHomeName = homeName;
+        this.mAwayName = awayName;
+        this.mHomeGoal = homeGoal;
+        this.mAwayGoal = awayGoal;
+        this.mTime = time;
     }
 }

@@ -9,12 +9,15 @@ import android.database.Cursor;
 public class Utilies
 {
     public static int CHAMPIONS_LEAGUE;
-    public static int TESTING_LEAGUE = 357;
+    private static Integer mCaptionColumnIndex = null;
+
+    public static void setChampionsLeague(int league_num)
+    {
+        CHAMPIONS_LEAGUE = league_num;
+    }
+
     public static String getLeague(int league_num, Context mContext)
     {
-        if(league_num == TESTING_LEAGUE)
-            return "TESTING LEAGUE";
-
         // Queries the user dictionary and returns results
         Cursor mCursor = mContext.getContentResolver().query(
                 DatabaseContract.leagues_table.buildLeagueWithId(),   // The content URI of the words table
@@ -25,8 +28,16 @@ public class Utilies
 
         if(mCursor != null) {
             mCursor.moveToFirst();
-            String caption = mCursor.getString(1);
-            return caption;
+
+            if(mCaptionColumnIndex == null)
+            {
+                mCaptionColumnIndex = mCursor.getColumnIndex(DatabaseContract.leagues_table.CAPTION_COL);
+            }
+
+            if(mCaptionColumnIndex != null && mCursor.getCount() > 0) {
+                String caption = mCursor.getString(mCaptionColumnIndex);
+                return caption;
+            }
         }
 
         return "";

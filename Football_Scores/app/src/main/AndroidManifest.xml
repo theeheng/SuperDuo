@@ -42,7 +42,7 @@
                 android:resource="@xml/scorewidgetinfo" />
         </receiver>
 
-        <service android:name="ScoreWidgetService"
+        <service android:name=".service.ScoreWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS"
             android:exported="false" />
 
