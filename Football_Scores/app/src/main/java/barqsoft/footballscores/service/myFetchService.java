@@ -41,7 +41,7 @@ public class myFetchService extends IntentService
     protected void onHandleIntent(Intent intent)
     {
         getLeague();
-        getData("n2");
+        getData("n3");
         getData("p2");
 
         return;

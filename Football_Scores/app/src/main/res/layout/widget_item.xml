@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="@dimen/widget_width"
-    android:layout_height="@dimen/widget_height"
-    android:gravity="center"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="@dimen/widget_width"
     android:background="@drawable/widget_item_background"
-    android:layout_alignParentTop="true"
+    android:padding="4dp"
+    android:id="@+id/widget_linear_layout"
     >
     <LinearLayout
         android:orientation="horizontal" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="5dp"
         >
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textSize="@dimen/TeamNames"
+                android:textSize="@dimen/WidgetTeamNames"
                 android:gravity="center"
                 android:text="@string/test_text"
                 android:id="@+id/home_name"/>
@@ -42,7 +42,7 @@
                 android:text="@string/test_text"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:textSize="@dimen/Score"
+                android:textSize="@dimen/WidgetScore"
                 android:id="@+id/score_textview"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/test_text"
-                android:textSize="@dimen/TeamNames"
+                android:textSize="@dimen/WidgetTeamNames"
                 android:id="@+id/away_name"/>
         </LinearLayout>
     </LinearLayout>

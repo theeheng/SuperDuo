@@ -100,7 +100,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
         rv.setTextViewText(R.id.home_name, mWidgetItems.get(position).getHomeName());
         rv.setTextViewText(R.id.away_name, mWidgetItems.get(position).getAwayName());
-        rv.setTextViewText(R.id.score_textview, String.format("%s - %s", mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal()));
+        rv.setTextViewText(R.id.score_textview, String.format("%s - %s", mWidgetItems.get(position).getHomeGoal().replace("-1",""), mWidgetItems.get(position).getAwayGoal()).replace("-1",""));
         rv.setTextViewText(R.id.data_textview, mWidgetItems.get(position).getTime());
         rv.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getHomeName()));
         rv.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getAwayName()));
@@ -111,7 +111,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         extras.putInt(ScoreWidgetProvider.EXTRA_ITEM, position);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-        rv.setOnClickFillInIntent(R.id.score_textview, fillInIntent);
+        rv.setOnClickFillInIntent(R.id.widget_linear_layout, fillInIntent);
 
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,

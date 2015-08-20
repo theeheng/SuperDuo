@@ -28,8 +28,8 @@ import android.widget.Toast;
 import barqsoft.footballscores.service.ScoreWidgetService;
 
 public class ScoreWidgetProvider extends AppWidgetProvider {
-    public static final String TOAST_ACTION = "com.example.android.stackwidget.TOAST_ACTION";
-    public static final String EXTRA_ITEM = "com.example.android.stackwidget.EXTRA_ITEM";
+    public static final String CLICK_ACTION = "barqsoft.footballscores.ScoreWidget.CLICK_ACTION";
+    public static final String EXTRA_ITEM = "barqsoft.footballscores.ScoreWidget.EXTRA_ITEM";
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
@@ -49,11 +49,11 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        if (intent.getAction().equals(TOAST_ACTION)) {
-            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                    AppWidgetManager.INVALID_APPWIDGET_ID);
-            int viewIndex = intent.getIntExtra(EXTRA_ITEM, 0);
-            Toast.makeText(context, "Touched view " + viewIndex, Toast.LENGTH_SHORT).show();
+        if (intent.getAction().equals(CLICK_ACTION)) {
+
+            Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+            mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(mainActivityIntent);
         }
         super.onReceive(context, intent);
     }
@@ -82,7 +82,7 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
             Intent toastIntent = new Intent(context, ScoreWidgetProvider.class);
-            toastIntent.setAction(ScoreWidgetProvider.TOAST_ACTION);
+            toastIntent.setAction(ScoreWidgetProvider.CLICK_ACTION);
             toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
