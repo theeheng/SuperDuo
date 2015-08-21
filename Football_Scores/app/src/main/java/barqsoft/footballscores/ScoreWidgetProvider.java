@@ -22,14 +22,22 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import barqsoft.footballscores.service.ScoreWidgetService;
 
 public class ScoreWidgetProvider extends AppWidgetProvider {
+
+
+    public static final String LOG_TAG = "ScoreWidgetProvider";
+    public static final String SCORE_UPDATE_ACTION = "barqsoft.footballscores.ScoreWidget.SCORE_UPDATE_ACTION";
     public static final String CLICK_ACTION = "barqsoft.footballscores.ScoreWidget.CLICK_ACTION";
+    public static final String WIDGET_ITEM = "barqsoft.footballscores.ScoreWidget.WIDGET_ITEM";
     public static final String EXTRA_ITEM = "barqsoft.footballscores.ScoreWidget.EXTRA_ITEM";
+
+    private static int[] widgetIds;
 
     @Override
     public void onDeleted(Context context, int[] appWidgetIds) {
@@ -49,17 +57,41 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-        if (intent.getAction().equals(CLICK_ACTION)) {
 
-            Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+        String action = intent.getAction();
+
+        /*if (action.equals("android.appwidget.action.APPWIDGET_UPDATE_OPTIONS")) {
+            // Send broadcast intent to pass mUrl variable to the MyContentFactory.
+            Intent broadcastIntent = new Intent(SCORE_UPDATE_ACTION);
+            // broadcastIntent.putExtra("some.string.you.want.EXTRA_URL", url);
+            context.sendBroadcast(broadcastIntent);
+        }
+        else
+        */
+        if (action.equals(CLICK_ACTION)) {
+
+          /*  Intent mainActivityIntent = new Intent(context.getApplicationContext(), MainActivity.class);
             mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(mainActivityIntent);
+            context.startActivity(mainActivityIntent);*/
+
+            Intent intentw = new Intent(context.getApplicationContext(),AppWidgetProvider.class);
+            intentw.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+            // since it seems the onUpdate() is only fired on that:
+
+            intentw.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,widgetIds);
+            context.sendBroadcast(intentw);
         }
         super.onReceive(context, intent);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+
+        widgetIds = appWidgetIds;
+
+        Log.e(LOG_TAG, "On Update Widget called ");
+
         // update each of the widgets with the remote adapter
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
@@ -90,6 +122,8 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
             rv.setPendingIntentTemplate(R.id.stack_view, toastPendingIntent);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
+
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[i], R.id.stack_view);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }

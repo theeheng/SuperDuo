@@ -17,10 +17,13 @@
 package barqsoft.footballscores;
 
 import android.appwidget.AppWidgetManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -29,26 +32,50 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import barqsoft.footballscores.service.myFetchService;
+
 
 public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
+    public static final String LOG_TAG = "StackRemoteViewsFactory";
     private int mScoreCount = 0;
     private List<WidgetItem> mWidgetItems = new ArrayList<WidgetItem>();
     private Context mContext;
     private int mAppWidgetId;
+    private BroadcastReceiver mIntentListener;
 
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
+        //setupIntentListener();
     }
 
-    public void onCreate() {
+    private void setupIntentListener() {
+        if (mIntentListener == null) {
+            mIntentListener = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
 
+                    // Update mUrl through BroadCast Intent
+                    setupWidgetData();
+                    //mWidgetItems = (ArrayList<WidgetItem>)intent.getExtras().getBundle(ScoreWidgetProvider.WIDGET_ITEM).get(ScoreWidgetProvider.WIDGET_ITEM);
+                }
+            };
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(ScoreWidgetProvider.SCORE_UPDATE_ACTION);
+            mContext.registerReceiver(mIntentListener, filter);
+        }
+    }
+
+    private void setupWidgetData()
+    {
         mScoreCount = 0;
 
         Date todayDate = new Date(System.currentTimeMillis());
         SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Log.e(LOG_TAG, "Loading widget data for date : " + mformat.format(todayDate));
 
         Cursor mCursor = mContext.getContentResolver().query(
                 DatabaseContract.scores_table.buildScoreWithDate(),   // The content URI of the words table
@@ -65,27 +92,22 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
                 mScoreCount++;
             }
         }
-        // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
-        // for example downloading or creating content etc, should be deferred to onDataSetChanged()
-        // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
-        //for (int i = 0; i < mCount; i++) {
-        //    mWidgetItems.add(new WidgetItem(i + "!"));
-        //}
-
-        // We sleep for 3 seconds here to show how the empty view appears in the interim.
-        // The empty view is set in the StackWidgetProvider and should be a sibling of the
-        // collection view.
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    }
+    private void teardownIntentListener() {
+        if (mIntentListener != null) {
+            mContext.unregisterReceiver(mIntentListener);
+            mIntentListener = null;
         }
+    }
+
+    public void onCreate() {
     }
 
     public void onDestroy() {
         // In onDestroy() you should tear down anything that was setup for your data source,
         // eg. cursors, connections, etc.
         mWidgetItems.clear();
+        //teardownIntentListener();
     }
 
     public int getCount() {
@@ -93,6 +115,9 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     }
 
     public RemoteViews getViewAt(int position) {
+
+        Log.e(LOG_TAG, "Loading widget stack view " + position);
+
         // position will always range from 0 to getCount() - 1.
 
         // We construct a remote views item based on our widget item xml file, and set the
@@ -112,17 +137,6 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         rv.setOnClickFillInIntent(R.id.widget_linear_layout, fillInIntent);
-
-        // You can do heaving lifting in here, synchronously. For example, if you need to
-        // process an image, fetch something from the network, etc., it is ok to do it here,
-        // synchronously. A loading view will show up in lieu of the actual contents in the
-        // interim.
-        try {
-            System.out.println("Loading view " + position);
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         // Return the remote views object.
         return rv;
@@ -153,5 +167,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         // from the network, etc., it is ok to do it here, synchronously. The widget will remain
         // in its current state while work is being done here, so you don't need to worry about
         // locking up the widget.
+
+        setupWidgetData();
     }
 }
