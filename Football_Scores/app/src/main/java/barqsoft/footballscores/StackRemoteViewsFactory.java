@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -122,13 +123,21 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
         // We construct a remote views item based on our widget item xml file, and set the
         // text based on the position.
+        Resources res = mContext.getResources();
+
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
         rv.setTextViewText(R.id.home_name, mWidgetItems.get(position).getHomeName());
+        rv.setContentDescription(R.id.home_name, mWidgetItems.get(position).getHomeName());
         rv.setTextViewText(R.id.away_name, mWidgetItems.get(position).getAwayName());
-        rv.setTextViewText(R.id.score_textview, String.format("%s - %s", mWidgetItems.get(position).getHomeGoal().replace("-1",""), mWidgetItems.get(position).getAwayGoal()).replace("-1",""));
+        rv.setContentDescription(R.id.away_name, mWidgetItems.get(position).getAwayName());
+        rv.setTextViewText(R.id.score_textview, Utilies.getScores(res, mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal(), false));
+        rv.setContentDescription(R.id.score_textview, Utilies.getScores(res, mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal(), true));
         rv.setTextViewText(R.id.data_textview, mWidgetItems.get(position).getTime());
+        rv.setContentDescription(R.id.data_textview, mWidgetItems.get(position).getTime());
         rv.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getHomeName()));
+        rv.setContentDescription(R.id.home_crest, res.getString(R.string.image_crest_content_description, mWidgetItems.get(position).getHomeName()));
         rv.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getAwayName()));
+        rv.setContentDescription(R.id.away_crest, res.getString(R.string.image_crest_content_description, mWidgetItems.get(position).getAwayName()));
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.

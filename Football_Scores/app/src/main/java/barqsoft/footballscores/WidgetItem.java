@@ -34,14 +34,14 @@ public class WidgetItem {
         return mAwayName;
     }
 
-    public String getHomeGoal()
+    public int getHomeGoal()
     {
-        return mHomeGoal;
+        return Integer.parseInt(mHomeGoal);
     }
 
-    public String getAwayGoal()
+    public int getAwayGoal()
     {
-        return mAwayGoal;
+        return Integer.parseInt(mAwayGoal);
     }
 
     public String getTime()

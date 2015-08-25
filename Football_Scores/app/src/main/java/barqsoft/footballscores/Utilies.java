@@ -1,6 +1,7 @@
 package barqsoft.footballscores;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 
 /**
@@ -73,15 +74,21 @@ public class Utilies
         }
     }
 
-    public static String getScores(int home_goals,int awaygoals)
+    public static String getScores(Resources res, int home_goals,int awaygoals, boolean isContentDescription)
     {
         if(home_goals < 0 || awaygoals < 0)
         {
-            return " - ";
+            if(isContentDescription)
+                return res.getString(R.string.score_format_text_content_description,"","");
+            else
+                return res.getString(R.string.score_format_text,"","");
         }
         else
         {
-            return String.valueOf(home_goals) + " - " + String.valueOf(awaygoals);
+            if(isContentDescription)
+                return res.getString(R.string.score_format_text_content_description,String.valueOf(home_goals),String.valueOf(awaygoals));
+            else
+                return res.getString(R.string.score_format_text,String.valueOf(home_goals),String.valueOf(awaygoals));
         }
     }
 
