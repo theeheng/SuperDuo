@@ -17,14 +17,14 @@
 package com.google.zxing.client.android;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Handler;
-
-import com.zxing.barcodescanner.camera.CameraManager;
-import com.zxing.barcodescanner.camera.CameraSettings;
+import android.preference.PreferenceManager;
+import com.google.zxing.client.android.camera.CameraManager;
+import com.google.zxing.client.android.camera.FrontLightMode;
 
 /**
  * Detects ambient light and switches on the front light when very dark, and off again when sufficiently light.
@@ -32,68 +32,55 @@ import com.zxing.barcodescanner.camera.CameraSettings;
  * @author Sean Owen
  * @author Nikolaus Huber
  */
-public final class AmbientLightManager implements SensorEventListener {
+final class AmbientLightManager implements SensorEventListener {
 
-    private static final float TOO_DARK_LUX = 45.0f;
-    private static final float BRIGHT_ENOUGH_LUX = 450.0f;
+  private static final float TOO_DARK_LUX = 45.0f;
+  private static final float BRIGHT_ENOUGH_LUX = 450.0f;
 
-    private CameraManager cameraManager;
-    private CameraSettings cameraSettings;
-    private Sensor lightSensor;
-    private Context context;
+  private final Context context;
+  private CameraManager cameraManager;
+  private Sensor lightSensor;
 
-    private Handler handler;
+  AmbientLightManager(Context context) {
+    this.context = context;
+  }
 
-    public AmbientLightManager(Context context, CameraManager cameraManager, CameraSettings settings) {
-        this.context = context;
-        this.cameraManager = cameraManager;
-        this.cameraSettings = settings;
-
-        this.handler = new Handler();
+  void start(CameraManager cameraManager) {
+    this.cameraManager = cameraManager;
+    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    if (FrontLightMode.readPref(sharedPrefs) == FrontLightMode.AUTO) {
+      SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+      lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+      if (lightSensor != null) {
+        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+      }
     }
+  }
 
-    public void start() {
-        if (cameraSettings.isAutoTorchEnabled()) {
-            SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-            lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-            if (lightSensor != null) {
-                sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            }
-        }
+  void stop() {
+    if (lightSensor != null) {
+      SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+      sensorManager.unregisterListener(this);
+      cameraManager = null;
+      lightSensor = null;
     }
+  }
 
-    public void stop() {
-        if (lightSensor != null) {
-            SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-            sensorManager.unregisterListener(this);
-            lightSensor = null;
-        }
+  @Override
+  public void onSensorChanged(SensorEvent sensorEvent) {
+    float ambientLightLux = sensorEvent.values[0];
+    if (cameraManager != null) {
+      if (ambientLightLux <= TOO_DARK_LUX) {
+        cameraManager.setTorch(true);
+      } else if (ambientLightLux >= BRIGHT_ENOUGH_LUX) {
+        cameraManager.setTorch(false);
+      }
     }
+  }
 
-    private void setTorch(final boolean on) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                cameraManager.setTorch(on);
-            }
-        });
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        float ambientLightLux = sensorEvent.values[0];
-        if (cameraManager != null) {
-            if (ambientLightLux <= TOO_DARK_LUX) {
-                setTorch(true);
-            } else if (ambientLightLux >= BRIGHT_ENOUGH_LUX) {
-                setTorch(false);
-            }
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // do nothing
-    }
+  @Override
+  public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    // do nothing
+  }
 
 }

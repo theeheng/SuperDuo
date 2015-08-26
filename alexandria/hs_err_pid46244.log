@@ -1,0 +1,173 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 344 bytes for AllocateHeap
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (memory/allocation.inline.hpp:61), pid=46244, tid=42724
+#
+# JRE version:  (8.0_45-b14) (build )
+# Java VM: Java HotSpot(TM) Client VM (25.45-b02 mixed mode, sharing windows-x86 )
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0211e000):  JavaThread "main" [_thread_in_vm, id=42724, stack(0x00290000,0x002e0000)]
+
+Stack: [0x00290000,0x002e0000],  sp=0x002df6fc,  free space=317k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [jvm.dll+0x1a4f8b]
+V  [jvm.dll+0x19d888]
+V  [jvm.dll+0x15f353]
+V  [jvm.dll+0x15f3d2]
+V  [jvm.dll+0x1748e7]
+V  [jvm.dll+0xfb187]
+j  java.lang.Thread.start0()V+0
+j  java.lang.Thread.start()V+26
+j  java.lang.ref.Finalizer.<clinit>()V+68
+v  ~StubRoutines::call_stub
+V  [jvm.dll+0x155cb5]
+V  [jvm.dll+0x21b12e]
+V  [jvm.dll+0x155d4e]
+V  [jvm.dll+0xbe8bb]
+V  [jvm.dll+0xbfa67]
+V  [jvm.dll+0xbfb98]
+V  [jvm.dll+0x17376c]
+V  [jvm.dll+0xe51a1]
+C  [java.exe+0x14c6]
+C  [java.exe+0x203a]
+C  [java.exe+0xadef]
+C  [java.exe+0xae79]
+C  [kernel32.dll+0x133aa]
+C  [ntdll.dll+0x39ef2]
+C  [ntdll.dll+0x39ec5]
+C  0x00000000
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  java.lang.Thread.start0()V+0
+j  java.lang.Thread.start()V+26
+j  java.lang.ref.Finalizer.<clinit>()V+68
+v  ~StubRoutines::call_stub
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x0229d000 JavaThread "Reference Handler" daemon [_thread_blocked, id=43444, stack(0x25950000,0x259a0000)]
+=>0x0211e000 JavaThread "main" [_thread_in_vm, id=42724, stack(0x00290000,0x002e0000)]
+
+Other Threads:
+  0x0229bc00 VMThread [stack: 0x252a0000,0x252f0000] [id=48104]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x0211beb0] Threads_lock - owner thread: 0x0211e000
+
+Heap:
+ def new generation   total 4928K, used 88K [0x04800000, 0x04d50000, 0x0f2a0000)
+  eden space 4416K,   2% used [0x04800000, 0x04816158, 0x04c50000)
+  from space 512K,   0% used [0x04c50000, 0x04c50000, 0x04cd0000)
+  to   space 512K,   0% used [0x04cd0000, 0x04cd0000, 0x04d50000)
+ tenured generation   total 10944K, used 0K [0x0f2a0000, 0x0fd50000, 0x24800000)
+   the space 10944K,   0% used [0x0f2a0000, 0x0f2a0000, 0x0f2a0200, 0x0fd50000)
+ Metaspace       used 6K, capacity 2240K, committed 2240K, reserved 4480K
+
+Card table byte_map: [0x04610000,0x04720000] byte_map_base: 0x045ec000
+
+Polling page: 0x001e0000
+
+CodeCache: size=32768Kb used=334Kb max_used=334Kb free=32433Kb
+ bounds [0x02610000, 0x02668000, 0x04610000]
+ total_blobs=68 nmethods=0 adapters=45
+ compilation: enabled
+
+Compilation events (0 events):
+No events
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (0 events):
+No events
+
+Internal exceptions (0 events):
+No events
+
+Events (2 events):
+Event: 0.044 Thread 0x0211e000 Thread added: 0x0211e000
+Event: 0.063 Thread 0x0229d000 Thread added: 0x0229d000
+
+
+Dynamic libraries:
+0x00180000 - 0x001b3000 	C:\ProgramData\Oracle\Java\javapath\java.exe
+0x77500000 - 0x77680000 	C:\Windows\SysWOW64\ntdll.dll
+0x75210000 - 0x75320000 	C:\Windows\syswow64\kernel32.dll
+0x75340000 - 0x75387000 	C:\Windows\syswow64\KERNELBASE.dll
+0x75730000 - 0x757d0000 	C:\Windows\syswow64\ADVAPI32.dll
+0x76bd0000 - 0x76c7c000 	C:\Windows\syswow64\msvcrt.dll
+0x76c80000 - 0x76c99000 	C:\Windows\SysWOW64\sechost.dll
+0x76700000 - 0x767f0000 	C:\Windows\syswow64\RPCRT4.dll
+0x74f50000 - 0x74fb0000 	C:\Windows\syswow64\SspiCli.dll
+0x74f40000 - 0x74f4c000 	C:\Windows\syswow64\CRYPTBASE.dll
+0x76ac0000 - 0x76bc0000 	C:\Windows\syswow64\USER32.dll
+0x75870000 - 0x75900000 	C:\Windows\syswow64\GDI32.dll
+0x774d0000 - 0x774da000 	C:\Windows\syswow64\LPK.dll
+0x76df0000 - 0x76e8d000 	C:\Windows\syswow64\USP10.dll
+0x734a0000 - 0x7363e000 	C:\Windows\WinSxS\x86_microsoft.windows.common-controls_6595b64144ccf1df_6.0.7601.17514_none_41e6975e2bd6f2b2\COMCTL32.dll
+0x75930000 - 0x75987000 	C:\Windows\syswow64\SHLWAPI.dll
+0x75470000 - 0x754d0000 	C:\Windows\system32\IMM32.DLL
+0x753a0000 - 0x7546c000 	C:\Windows\syswow64\MSCTF.dll
+0x5b630000 - 0x5b6ef000 	C:\Program Files (x86)\Java\jre1.8.0_45\bin\msvcr100.dll
+0x6dfe0000 - 0x6e3a0000 	C:\Program Files (x86)\Java\jre1.8.0_45\bin\client\jvm.dll
+0x6d570000 - 0x6d577000 	C:\Windows\system32\WSOCK32.dll
+0x75820000 - 0x75855000 	C:\Windows\syswow64\WS2_32.dll
+0x75390000 - 0x75396000 	C:\Windows\syswow64\NSI.dll
+0x6fa40000 - 0x6fa72000 	C:\Windows\system32\WINMM.dll
+0x731e0000 - 0x731e9000 	C:\Windows\system32\VERSION.dll
+0x75aa0000 - 0x75aa5000 	C:\Windows\syswow64\PSAPI.DLL
+0x715a0000 - 0x715ac000 	C:\Program Files (x86)\Java\jre1.8.0_45\bin\verify.dll
+0x71570000 - 0x71591000 	C:\Program Files (x86)\Java\jre1.8.0_45\bin\java.dll
+0x71550000 - 0x71563000 	C:\Program Files (x86)\Java\jre1.8.0_45\bin\zip.dll
+0x700b0000 - 0x7019b000 	C:\Windows\system32\dbghelp.dll
+
+VM Arguments:
+jvm_args: -Xmx512M 
+java_command: <unknown>
+java_class_path (initial): .
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=C:\Program Files\Java\jdk1.7.0_71
+_JAVA_OPTIONS=-Xmx512M
+PATH=C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files (x86)\Microsoft Team Foundation Server 2012 Power Tools\;C:\Program Files (x86)\Microsoft Team Foundation Server 2012 Power Tools\Best Practices Analyzer\;C:\Program Files\System Center Operations Manager 2007\;C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET Web Pages\v1.0\;C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Devart\Review Assistant;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;C:\Program Files\nodejs\;C:\Users\htan\Documents\Visual Studio 2012\Projects\MvcApplication2\node_modules\protractor\selenium;C:\Program Files (x86)\Git\cmd;C:\Program Files (x86)\GtkSharp\2.12\bin;C:\Program Files (x86)\Skype\Phone\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files (x86)\Microsoft SDKs\TypeScript\1.4\;C:\Program Files (x86)\nodejs\;C:\Ruby193\bin;C:\Program Files\Java\jdk1.7.0_71;C:\Program Files\Java\jre7;C:\apache-ant-1.9.3\bin;I:\Android\android-sdk\tools;I:\Android\android-sdk\platform-tools;C:\Users\htan\AppData\Roaming\npm
+USERNAME=htan
+OS=Windows_NT
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
+
+
+
+---------------  S Y S T E M  ---------------
+
+OS: Windows 7 , 64 bit Build 7601 (6.1.7601.17932)
+
+CPU:total 8 (4 cores per cpu, 2 threads per core) family 6 model 42 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, aes, clmul, ht, tsc, tscinvbit
+
+Memory: 4k page, physical 8233400k(533748k free), swap 10640260k(215028k free)
+
+vm_info: Java HotSpot(TM) Client VM (25.45-b02) for windows-x86 JRE (1.8.0_45-b14), built on Apr 10 2015 10:46:40 by "java_re" with MS VC++ 10.0 (VS2010)
+
+time: Wed Aug 26 19:09:08 2015
+elapsed time: 0 seconds (0d 0h 0m 0s)
+
