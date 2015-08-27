@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -40,7 +42,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     private String mScanFormat = "Format:";
     private String mScanContents = "Contents:";
 
-
+    private Boolean mIsOnline = null;
 
     public AddBook(){
     }
@@ -81,11 +83,25 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                     //clearFields();
                     return;
                 }
-                //Once we have an ISBN, start a book intent
-                Intent bookIntent = new Intent(getActivity(), BookService.class);
-                bookIntent.putExtra(BookService.EAN, ean);
-                bookIntent.setAction(BookService.FETCH_BOOK);
-                getActivity().startService(bookIntent);
+
+                ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+                if(activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+
+                    mIsOnline = true;
+
+                    //Once we have an ISBN, start a book intent
+                    Intent bookIntent = new Intent(getActivity(), BookService.class);
+                    bookIntent.putExtra(BookService.EAN, ean);
+                    bookIntent.setAction(BookService.FETCH_BOOK);
+                    getActivity().startService(bookIntent);
+                }
+                else
+                {
+                    mIsOnline = false;
+                }
+
                 AddBook.this.restartLoader();
             }
         });
@@ -99,14 +115,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 // Hint: Use a Try/Catch block to handle the Intent dispatch gracefully, if you
                 // are using an external app.
                 //when you're done, remove the toast below.
-                Context context = getActivity();
-                CharSequence text = "This button should let you scan a book for its barcode!";
-                int duration = Toast.LENGTH_SHORT;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
-
-                new IntentIntegrator(AddBook.this).initiateScan();
+                try {
+                    IntentIntegrator intentIntegrator = new IntentIntegrator(AddBook.this);
+                    intentIntegrator.initiateScan();
+                }
+                catch (Exception ex)
+                {
+                    Log.e(TAG,"Error loading barcode scanning :"+ex.getMessage());
+                }
             }
         });
 
@@ -163,6 +179,12 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
         if (!data.moveToFirst()) {
+
+            if(mIsOnline != null && mIsOnline == false)
+            {
+                Toast.makeText(getActivity(), R.string.offline_text , Toast.LENGTH_LONG).show();
+            }
+
             return;
         }
 
@@ -216,14 +238,14 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             if (result.getContents() == null) {
-                Log.d("MainActivity", "Cancelled scan");
+                Log.d(TAG, "Cancelled scan");
                 Toast.makeText(getActivity(), "Cancelled", Toast.LENGTH_LONG).show();
             } else {
-                Log.d("MainActivity", "Scanned : " + result.getContents());
+                Log.d(TAG, "Scanned : " + result.getContents());
                 ean.setText(result.getContents());
             }
         } else {
-            Log.d("MainActivity", "Weird");
+            Log.d(TAG, "Weird");
             // This is important, otherwise the result will not be passed to the fragment
             super.onActivityResult(requestCode, resultCode, data);
         }
