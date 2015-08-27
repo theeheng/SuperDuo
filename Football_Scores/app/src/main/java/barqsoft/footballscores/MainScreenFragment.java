@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import barqsoft.footballscores.service.AlarmReceiver;
 import barqsoft.footballscores.service.myFetchService;
 
 /**
