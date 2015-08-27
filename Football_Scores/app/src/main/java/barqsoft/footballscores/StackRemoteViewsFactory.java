@@ -75,32 +75,38 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public RemoteViews getViewAt(int position) {
 
-        Resources res = mContext.getResources();
+        if(mWidgetItems.size() > position) {
+            Resources res = mContext.getResources();
 
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
-        rv.setTextViewText(R.id.home_name, mWidgetItems.get(position).getHomeName());
-        rv.setContentDescription(R.id.home_name, mWidgetItems.get(position).getHomeName());
-        rv.setTextViewText(R.id.away_name, mWidgetItems.get(position).getAwayName());
-        rv.setContentDescription(R.id.away_name, mWidgetItems.get(position).getAwayName());
-        rv.setTextViewText(R.id.score_textview, Utilies.getScores(res, mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal(), false));
-        rv.setContentDescription(R.id.score_textview, Utilies.getScores(res, mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal(), true));
-        rv.setTextViewText(R.id.data_textview, mWidgetItems.get(position).getTime());
-        rv.setContentDescription(R.id.data_textview, mWidgetItems.get(position).getTime());
-        rv.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getHomeName()));
-        rv.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getAwayName()));
+            RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
+            rv.setTextViewText(R.id.home_name, mWidgetItems.get(position).getHomeName());
+            rv.setContentDescription(R.id.home_name, mWidgetItems.get(position).getHomeName());
+            rv.setTextViewText(R.id.away_name, mWidgetItems.get(position).getAwayName());
+            rv.setContentDescription(R.id.away_name, mWidgetItems.get(position).getAwayName());
+            rv.setTextViewText(R.id.score_textview, Utilies.getScores(res, mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal(), false));
+            rv.setContentDescription(R.id.score_textview, Utilies.getScores(res, mWidgetItems.get(position).getHomeGoal(), mWidgetItems.get(position).getAwayGoal(), true));
+            rv.setTextViewText(R.id.data_textview, mWidgetItems.get(position).getTime());
+            rv.setContentDescription(R.id.data_textview, mWidgetItems.get(position).getTime());
+            rv.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getHomeName()));
+            rv.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getAwayName()));
 
-        //Decorative Graphic Content Description to null
-        rv.setContentDescription(R.id.home_crest, null);
-        rv.setContentDescription(R.id.away_crest, null);
+            //Decorative Graphic Content Description to null
+            rv.setContentDescription(R.id.home_crest, null);
+            rv.setContentDescription(R.id.away_crest, null);
 
-        Bundle extras = new Bundle();
-        extras.putInt(ScoreWidgetProvider.EXTRA_ITEM, position);
-        Intent fillInIntent = new Intent();
-        fillInIntent.putExtras(extras);
-        rv.setOnClickFillInIntent(R.id.widget_linear_layout, fillInIntent);
+            Bundle extras = new Bundle();
+            extras.putInt(ScoreWidgetProvider.EXTRA_ITEM, position);
+            Intent fillInIntent = new Intent();
+            fillInIntent.putExtras(extras);
+            rv.setOnClickFillInIntent(R.id.widget_linear_layout, fillInIntent);
 
-        // Return the remote views object.
-        return rv;
+            // Return the remote views object.
+            return rv;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public RemoteViews getLoadingView() {
