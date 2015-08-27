@@ -19,7 +19,6 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        forceRTLIfSupported();
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             my_main = new PagerFragment();

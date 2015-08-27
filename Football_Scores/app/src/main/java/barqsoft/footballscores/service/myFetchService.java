@@ -1,7 +1,9 @@
 package barqsoft.footballscores.service;
 
 import android.app.IntentService;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -23,8 +25,10 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import barqsoft.footballscores.Application;
 import barqsoft.footballscores.DatabaseContract;
 import barqsoft.footballscores.R;
+import barqsoft.footballscores.ScoreWidgetProvider;
 import barqsoft.footballscores.Utilies;
 
 /**
@@ -41,9 +45,21 @@ public class myFetchService extends IntentService
     @Override
     protected void onHandleIntent(Intent intent)
     {
+        Log.e(LOG_TAG,"Service Handling");
         getLeague();
         getData("n3");
         getData("p2");
+
+        int[] ids = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), ScoreWidgetProvider.class));
+
+        if(ids != null && ids.length > 0) {
+
+            Intent widgetIntent = new Intent(this, ScoreWidgetProvider.class);
+            widgetIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+
+            widgetIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+            sendBroadcast(widgetIntent);
+        }
 
         return;
     }
@@ -61,7 +77,7 @@ public class myFetchService extends IntentService
             URL fetch = new URL(fetch_build.toString());
             m_connection = (HttpURLConnection) fetch.openConnection();
             m_connection.setRequestMethod("GET");
-            m_connection.addRequestProperty("X-Auth-Token","e136b7858d424b9da07c88f28b61989a");
+            m_connection.addRequestProperty("X-Auth-Token",Utilies.GetAPIKey(getApplicationContext()));
             m_connection.connect();
 
             // Read the input stream into a String
@@ -149,7 +165,7 @@ public class myFetchService extends IntentService
             URL fetch = new URL(fetch_build.toString());
             m_connection = (HttpURLConnection) fetch.openConnection();
             m_connection.setRequestMethod("GET");
-            m_connection.addRequestProperty("X-Auth-Token","e136b7858d424b9da07c88f28b61989a");
+            m_connection.addRequestProperty("X-Auth-Token",Utilies.GetAPIKey(getApplicationContext()));
             m_connection.connect();
 
             // Read the input stream into a String

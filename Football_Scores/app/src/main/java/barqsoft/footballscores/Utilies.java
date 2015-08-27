@@ -110,4 +110,11 @@ public class Utilies
             default: return R.drawable.no_icon;
         }
     }
+
+    public static String GetAPIKey(Context context) {
+
+        Resources res = context.getResources();
+        return res.getString(R.string.api_key);
+
+    }
 }

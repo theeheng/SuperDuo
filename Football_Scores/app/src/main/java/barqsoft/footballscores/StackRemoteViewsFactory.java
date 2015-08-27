@@ -73,7 +73,7 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     {
         mScoreCount = 0;
 
-        Date todayDate = new Date(System.currentTimeMillis());
+        Date todayDate = new Date(System.currentTimeMillis()+86400000);
         SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
 
         Log.e(LOG_TAG, "Loading widget data for date : " + mformat.format(todayDate));

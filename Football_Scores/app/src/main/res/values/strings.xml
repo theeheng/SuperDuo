@@ -42,4 +42,10 @@
         <xliff:g id="teamname" example="manchester united">%s</xliff:g> Crest
     </string>
     <string name="widget_default_view_text">Football Scores Widget</string>
+    <string name="api_key">19d752d859724881bef0f96d7662d96a</string>
+    <string name="score_list_view_content_description">Football score list</string>
+    <string name="viewpager_content_description">Day of weeks</string>
+    <string name="tabstrip_content_description">
+       Tab <xliff:g id="tabPageTitle" example="1">%s</xliff:g> selected.
+    </string>
 </resources>

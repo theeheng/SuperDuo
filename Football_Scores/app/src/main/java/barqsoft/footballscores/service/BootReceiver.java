@@ -20,7 +20,7 @@ public class BootReceiver extends BroadcastReceiver {
             PendingIntent pi = PendingIntent.getBroadcast(context, 0 , alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             am.cancel(pi);
-            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, AlarmManager.INTERVAL_HOUR, pi);
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 2000, AlarmManager.INTERVAL_HOUR, pi);
         }
     }
 }

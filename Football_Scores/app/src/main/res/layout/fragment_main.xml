@@ -17,5 +17,6 @@
             android:id = "@+id/scores_list"
             android:divider="@android:color/transparent"
             android:dividerHeight="15sp"
+            android:contentDescription="@string/score_list_view_content_description"
             />
 </FrameLayout>
