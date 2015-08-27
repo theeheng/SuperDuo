@@ -38,10 +38,7 @@
     <string name="score_format_text_content_description">
         <xliff:g id="homescore" example="1">%s</xliff:g> - <xliff:g id="awayscore" example="2">%s</xliff:g>
     </string>
-    <string name="image_crest_content_description">
-        <xliff:g id="teamname" example="manchester united">%s</xliff:g> Crest
-    </string>
-    <string name="widget_default_view_text">Football Scores Widget</string>
+    <string name="widget_default_view_text">No Football Match For Today</string>
     <string name="api_key">19d752d859724881bef0f96d7662d96a</string>
     <string name="score_list_view_content_description">Football score list</string>
     <string name="viewpager_content_description">Day of weeks</string>

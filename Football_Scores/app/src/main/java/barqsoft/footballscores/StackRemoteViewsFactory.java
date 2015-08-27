@@ -43,40 +43,21 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     private List<WidgetItem> mWidgetItems = new ArrayList<WidgetItem>();
     private Context mContext;
     private int mAppWidgetId;
-    private BroadcastReceiver mIntentListener;
+    private static int counter = 0;
 
     public StackRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
-        //setupIntentListener();
-    }
-
-    private void setupIntentListener() {
-        if (mIntentListener == null) {
-            mIntentListener = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-
-                    // Update mUrl through BroadCast Intent
-                    setupWidgetData();
-                    //mWidgetItems = (ArrayList<WidgetItem>)intent.getExtras().getBundle(ScoreWidgetProvider.WIDGET_ITEM).get(ScoreWidgetProvider.WIDGET_ITEM);
-                }
-            };
-            IntentFilter filter = new IntentFilter();
-            filter.addAction(ScoreWidgetProvider.SCORE_UPDATE_ACTION);
-            mContext.registerReceiver(mIntentListener, filter);
-        }
     }
 
     private void setupWidgetData()
     {
         mScoreCount = 0;
 
-        Date todayDate = new Date(System.currentTimeMillis()+86400000);
-        SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
+        Date todayDate = new Date(System.currentTimeMillis());
 
-        Log.e(LOG_TAG, "Loading widget data for date : " + mformat.format(todayDate));
+        SimpleDateFormat mformat = new SimpleDateFormat("yyyy-MM-dd");
 
         Cursor mCursor = mContext.getContentResolver().query(
                 DatabaseContract.scores_table.buildScoreWithDate(),   // The content URI of the words table
@@ -93,22 +74,15 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
                 mScoreCount++;
             }
         }
-    }
-    private void teardownIntentListener() {
-        if (mIntentListener != null) {
-            mContext.unregisterReceiver(mIntentListener);
-            mIntentListener = null;
-        }
+
+        counter ++;
     }
 
     public void onCreate() {
     }
 
     public void onDestroy() {
-        // In onDestroy() you should tear down anything that was setup for your data source,
-        // eg. cursors, connections, etc.
         mWidgetItems.clear();
-        //teardownIntentListener();
     }
 
     public int getCount() {
@@ -117,12 +91,6 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     public RemoteViews getViewAt(int position) {
 
-        Log.e(LOG_TAG, "Loading widget stack view " + position);
-
-        // position will always range from 0 to getCount() - 1.
-
-        // We construct a remote views item based on our widget item xml file, and set the
-        // text based on the position.
         Resources res = mContext.getResources();
 
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
@@ -135,12 +103,12 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         rv.setTextViewText(R.id.data_textview, mWidgetItems.get(position).getTime());
         rv.setContentDescription(R.id.data_textview, mWidgetItems.get(position).getTime());
         rv.setImageViewResource(R.id.home_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getHomeName()));
-        rv.setContentDescription(R.id.home_crest, res.getString(R.string.image_crest_content_description, mWidgetItems.get(position).getHomeName()));
         rv.setImageViewResource(R.id.away_crest, Utilies.getTeamCrestByTeamName(mWidgetItems.get(position).getAwayName()));
-        rv.setContentDescription(R.id.away_crest, res.getString(R.string.image_crest_content_description, mWidgetItems.get(position).getAwayName()));
 
-        // Next, we set a fill-intent which will be used to fill-in the pending intent template
-        // which is set on the collection view in StackWidgetProvider.
+        //Decorative Graphic Content Description to null
+        rv.setContentDescription(R.id.home_crest, null);
+        rv.setContentDescription(R.id.away_crest, null);
+
         Bundle extras = new Bundle();
         extras.putInt(ScoreWidgetProvider.EXTRA_ITEM, position);
         Intent fillInIntent = new Intent();
@@ -152,8 +120,6 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     }
 
     public RemoteViews getLoadingView() {
-        // You can create a custom loading view (for instance when getViewAt() is slow.) If you
-        // return null here, you will get the default loading view.
         return null;
     }
 
@@ -170,13 +136,6 @@ public class StackRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     }
 
     public void onDataSetChanged() {
-        // This is triggered when you call AppWidgetManager notifyAppWidgetViewDataChanged
-        // on the collection view corresponding to this factory. You can do heaving lifting in
-        // here, synchronously. For example, if you need to process an image, fetch something
-        // from the network, etc., it is ok to do it here, synchronously. The widget will remain
-        // in its current state while work is being done here, so you don't need to worry about
-        // locking up the widget.
-
         setupWidgetData();
     }
 }

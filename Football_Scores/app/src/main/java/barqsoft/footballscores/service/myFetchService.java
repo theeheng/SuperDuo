@@ -45,7 +45,6 @@ public class myFetchService extends IntentService
     @Override
     protected void onHandleIntent(Intent intent)
     {
-        Log.e(LOG_TAG,"Service Handling");
         getLeague();
         getData("n3");
         getData("p2");
@@ -301,8 +300,6 @@ public class myFetchService extends IntentService
             values.toArray(insert_data);
             inserted_data = mContext.getContentResolver().bulkInsert(
                     DatabaseContract.BASE_CONTENT_URI.buildUpon().appendPath(DatabaseContract.PATH_LEAGUE).build(),insert_data);
-
-            Log.v(LOG_TAG,"Succesfully Inserted League : " + String.valueOf(inserted_data));
         }
         catch (JSONException e)
         {
@@ -423,8 +420,6 @@ public class myFetchService extends IntentService
             values.toArray(insert_data);
             inserted_data = mContext.getContentResolver().bulkInsert(
                     DatabaseContract.BASE_CONTENT_URI.buildUpon().appendPath(DatabaseContract.PATH_SCORE).build(),insert_data);
-
-            Log.v(LOG_TAG,"Succesfully Inserted Scores : " + String.valueOf(inserted_data));
         }
         catch (JSONException e)
         {

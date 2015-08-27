@@ -10,7 +10,6 @@ public class AlarmReceiver extends BroadcastReceiver {
    @Override
    public void onReceive(Context context, Intent intent)
    {
-       Log.v("AlarmReceiver","Alarm received.");
        Intent service_start = new Intent(context, myFetchService.class);
        context.startService(service_start);
    }

@@ -34,7 +34,6 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
     public static final String LOG_TAG = "ScoreWidgetProvider";
     public static final String SCORE_UPDATE_ACTION = "barqsoft.footballscores.ScoreWidget.SCORE_UPDATE_ACTION";
     public static final String CLICK_ACTION = "barqsoft.footballscores.ScoreWidget.CLICK_ACTION";
-    public static final String WIDGET_ITEM = "barqsoft.footballscores.ScoreWidget.WIDGET_ITEM";
     public static final String EXTRA_ITEM = "barqsoft.footballscores.ScoreWidget.EXTRA_ITEM";
 
     @Override
@@ -54,7 +53,6 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AppWidgetManager mgr = AppWidgetManager.getInstance(context);
 
         String action = intent.getAction();
 
@@ -71,29 +69,16 @@ public class ScoreWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-        Log.e(LOG_TAG, "On Update Widget called ");
-
-        // update each of the widgets with the remote adapter
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
-            // Here we setup the intent which points to the StackViewService which will
-            // provide the views for this collection.
             Intent intent = new Intent(context, ScoreWidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
-            // When intents are compared, the extras are ignored, so we need to embed the extras
-            // into the data so that the extras will not be ignored.
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             rv.setRemoteAdapter(appWidgetIds[i], R.id.stack_view, intent);
 
-            // The empty view is displayed when the collection has no items. It should be a sibling
-            // of the collection view.
             rv.setEmptyView(R.id.stack_view, R.id.empty_view);
 
-            // Here we setup the a pending intent template. Individuals items of a collection
-            // cannot setup their own pending intents, instead, the collection as a whole can
-            // setup a pending intent template, and the individual items can set a fillInIntent
-            // to create unique before on an item to item basis.
             Intent toastIntent = new Intent(context, ScoreWidgetProvider.class);
             toastIntent.setAction(ScoreWidgetProvider.CLICK_ACTION);
             toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);

@@ -44,8 +44,8 @@ public class ScoresDBHelper extends SQLiteOpenHelper
                 + " UNIQUE ("+leagues_table.LEAGUE_COL+") ON CONFLICT REPLACE"
                 + " );";
 
-        Log.d("sql-statments", CreateScoresTable);
-        Log.d("sql-statments", CreateLeaguesTable);
+        //Log.d("sql-statments", CreateScoresTable);
+        //Log.d("sql-statments", CreateLeaguesTable);
         db.execSQL(CreateScoresTable);
         db.execSQL(CreateLeaguesTable);
     }
