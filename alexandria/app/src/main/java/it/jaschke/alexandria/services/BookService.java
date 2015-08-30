@@ -194,6 +194,11 @@ public class BookService extends IntentService {
                 if (bookInfo.has(AUTHORS)) {
                     writeBackAuthors(ean, bookInfo.getJSONArray(AUTHORS));
                 }
+                else
+                {
+                    writeBackAuthors(ean, null);
+                }
+
                 if (bookInfo.has(CATEGORIES)) {
                     writeBackCategories(ean, bookInfo.getJSONArray(CATEGORIES));
                 }
@@ -219,11 +224,20 @@ public class BookService extends IntentService {
 
     private void writeBackAuthors(String ean, JSONArray jsonArray) throws JSONException {
         ContentValues values= new ContentValues();
-        for (int i = 0; i < jsonArray.length(); i++) {
+
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                values.put(AlexandriaContract.AuthorEntry._ID, ean);
+                values.put(AlexandriaContract.AuthorEntry.AUTHOR, jsonArray.getString(i));
+                getContentResolver().insert(AlexandriaContract.AuthorEntry.CONTENT_URI, values);
+                values = new ContentValues();
+            }
+        }
+        else
+        {
             values.put(AlexandriaContract.AuthorEntry._ID, ean);
-            values.put(AlexandriaContract.AuthorEntry.AUTHOR, jsonArray.getString(i));
+            values.put(AlexandriaContract.AuthorEntry.AUTHOR, "");
             getContentResolver().insert(AlexandriaContract.AuthorEntry.CONTENT_URI, values);
-            values= new ContentValues();
         }
     }
 
