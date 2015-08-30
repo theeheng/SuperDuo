@@ -84,10 +84,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                     return;
                 }
 
-                ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-
-                if(activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                if(Utilities.IsConnectedToInternet(getActivity())) {
 
                     mIsOnline = true;
 
