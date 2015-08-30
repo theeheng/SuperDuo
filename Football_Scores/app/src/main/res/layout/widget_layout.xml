@@ -17,5 +17,6 @@
         android:textColor="#ffffff"
         android:textStyle="bold"
         android:text="@string/widget_default_view_text"
+        android:contentDescription="@string/widget_default_view_text"
         android:textSize="20sp" />
 </FrameLayout>

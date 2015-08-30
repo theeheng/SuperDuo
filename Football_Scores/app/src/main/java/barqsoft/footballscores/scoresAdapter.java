@@ -51,7 +51,7 @@ public class scoresAdapter extends CursorAdapter
         mHolder.home_name.setText(cursor.getString(COL_HOME));
         mHolder.home_name.setContentDescription(cursor.getString(COL_HOME));
         mHolder.away_name.setText(cursor.getString(COL_AWAY));
-        mHolder.home_name.setContentDescription(cursor.getString(COL_AWAY));
+        mHolder.away_name.setContentDescription(cursor.getString(COL_AWAY));
         mHolder.date.setText(cursor.getString(COL_MATCHTIME));
         mHolder.date.setContentDescription(cursor.getString(COL_MATCHTIME));
         mHolder.score.setText(Utilies.getScores(res, cursor.getInt(COL_HOME_GOALS), cursor.getInt(COL_AWAY_GOALS), false));
