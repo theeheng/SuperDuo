@@ -4,9 +4,9 @@ Android Nanodegree Project - Super Duo
 
 As part of Android NanoDegree, i'm required to improve two apps for this project based on the user feedback stated below:
 
-	* **Alexandria** : A book list and barcode scanner app.
+	* Alexandria : A book list and barcode scanner app.
 
-	* **Football Scores** : An app that tracks current and future football matches (soccer, for students in the USA).
+	* Football Scores : An app that tracks current and future football matches (soccer, for students in the USA).
 
 
 <h4>User Feedback for Alexandria:</h4>
